@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEKAUAN Bakery - ระบบโหวตชีสพายในดวงใจ</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Prompt -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bakery: {
+                            50: '#FDFBF7',
+                            100: '#F7F0E6',
+                            200: '#EBDCC9',
+                            300: '#DFC7AC',
+                            400: '#C8A27A',
+                            500: '#B08154',
+                            600: '#8C5E35',
+                            700: '#674121',
+                            800: '#4D2D15',
+                            900: '#341A0B',
+                            accent: '#D4A373',
+                            chocolate: '#5C3D2E',
+                            cream: '#FAF6F0'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Prompt', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #FAF6F0;
+            color: #4D2D15;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Animated background pattern */
+        .bg-pattern {
+            background-color: #FAF6F0;
+            background-image: radial-gradient(#C8A27A 0.75px, transparent 0.75px), radial-gradient(#C8A27A 0.75px, #FAF6F0 0.75px);
+            background-size: 30px 30px;
+            background-position: 0 0,15px 15px;
+            opacity: 0.85;
+        }
+
+        /* Checkmark Animation */
+        @keyframes scaleIn {
+            0% { transform: scale(0); opacity: 0; }
+            60% { transform: scale(1.15); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes drawCheck {
+            0% { stroke-dashoffset: 100; }
+            100% { stroke-dashoffset: 0; }
+        }
+
+        .animate-scale-in {
+            animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .checkmark-path {
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            animation: drawCheck 0.5s ease-in-out 0.2s forwards;
+        }
+
+        /* Custom Scrollbar for admin modal */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F7F0E6;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #C8A27A;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between bg-pattern relative overflow-x-hidden">
+
+    <!-- Header Banner -->
+    <header class="w-full bg-white/90 backdrop-blur-md border-b border-bakery-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- Brand Logo & Name -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                <!-- DEKAUAN Official Cheesecake Cup SVG Round Badge Logo -->
+                <div class="w-12 h-12 md:w-14 md:h-14 flex-shrink-0 transition-transform duration-300 hover:scale-105">
+                    <svg viewBox="0 0 200 200" class="w-full h-full drop-shadow-sm rounded-full">
+                        <!-- Outer badge background circle -->
+                        <circle cx="100" cy="100" r="96" fill="#FBF3E7" stroke="#EEDCC8" stroke-width="3"/>
+                        <!-- Inner stitched dashed ring -->
+                        <circle cx="100" cy="100" r="85" fill="none" stroke="#D3B690" stroke-width="2.5" stroke-dasharray="6,4"/>
+                        
+                        <!-- Top Whisk Wire Beater Icon -->
+                        <g stroke="#4A200E" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M100 78 C88 68 80 46 90 32 C96 22 104 22 110 32 C120 46 112 68 100 78 Z" fill="none" stroke-width="3.5"/>
+                            <path d="M100 78 C94 66 88 46 97 31 C101 24 107 28 102 42 C97 56 100 78 100 78 Z" fill="none" stroke-width="2.5"/>
+                            <path d="M100 78 C106 66 112 46 103 31 C99 24 93 28 98 42 C103 56 100 78 100 78 Z" fill="none" stroke-width="2.5"/>
+                            <!-- Whisk Band Base -->
+                            <rect x="93" y="76" width="14" height="6" rx="2" fill="#4A200E" stroke="none"/>
+                            <!-- Swirling connect line under whisk -->
+                            <path d="M72 82 C88 72 98 84 136 78 C142 77 141 85 134 83" fill="none" stroke-width="3"/>
+                        </g>
+
+                        <!-- Heart above D/e -->
+                        <path d="M68 68 C64 62 56 66 61 73 L68 80 L75 73 C80 66 72 62 68 68 Z" fill="#4A200E"/>
+
+                        <!-- "Dekauan" Brand Text -->
+                        <text x="100" y="113" font-family="'Prompt', cursive, sans-serif" font-weight="800" font-size="31" fill="#4A200E" text-anchor="middle" letter-spacing="-0.5">Dekauan</text>
+
+                        <!-- Subtitle: — CHEESECAKE CUP — -->
+                        <g fill="#4A200E" stroke="#4A200E">
+                            <line x1="56" y1="126" x2="68" y2="126" stroke-width="2" stroke-linecap="round"/>
+                            <text x="100" y="129" font-family="'Prompt', sans-serif" font-weight="700" font-size="8.5" stroke="none" text-anchor="middle" letter-spacing="1">CHEESECAKE CUP</text>
+                            <line x1="132" y1="126" x2="144" y2="126" stroke-width="2" stroke-linecap="round"/>
+                        </g>
+
+                        <!-- Cheese Drip Graphic at bottom -->
+                        <path d="M66 138 C80 138 88 144 93 150 C96 154 98 165 101 165 C104 165 106 154 109 150 C114 144 122 138 136 138 C124 145 116 168 101 168 C86 168 78 145 66 138 Z" fill="#F5C869" stroke="#4A200E" stroke-width="1.5"/>
+                        <!-- Cheese Drip Gloss Highlight -->
+                        <ellipse cx="101" cy="161" rx="2" ry="3" fill="#FFF8EB"/>
+                        <circle cx="63" cy="133" r="1.5" fill="#4A200E"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold tracking-tight text-bakery-chocolate leading-none">
+                        DEKAUAN <span class="text-xs md:text-sm font-normal text-bakery-600 block sm:inline">Cheesecake Cup</span>
+                    </h1>
+                    <p class="text-xs text-bakery-500 font-light">Cheese Pie Homemade Voting</p>
+                </div>
+            </div>
+
+            <!-- Admin Login Button -->
+            <button id="open-admin-btn" onclick="openAdminAuth()" class="flex items-center space-x-2 bg-bakery-100 hover:bg-bakery-200 text-bakery-800 px-3 py-1.5 md:px-4 md:py-2 rounded-full transition-all duration-200 border border-bakery-300 text-xs md:text-sm font-medium shadow-sm active:scale-95">
+                <i class="fa-solid fa-user-shield text-bakery-700"></i>
+                <span class="hidden sm:inline">ผู้ดูแลระบบ</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-6 md:py-10 flex flex-col items-center">
+
+        <!-- Welcome Banner -->
+        <div class="text-center max-w-2xl mb-8 md:mb-12">
+            <span class="inline-block px-3.5 py-1 bg-bakery-200 text-bakery-800 rounded-full text-xs font-semibold uppercase tracking-wider mb-2 border border-bakery-300">
+                <i class="fa-solid fa-star text-amber-600 mr-1"></i> Customer Choice 2026
+            </span>
+            <h2 class="text-2xl md:text-4xl font-extrabold text-bakery-chocolate mb-3 leading-tight">
+                ร่วมโหวตเมนู "ชีสพาย" ในดวงใจของคุณ
+            </h2>
+            <p class="text-sm md:text-base text-bakery-700 font-light max-w-xl mx-auto">
+                เลือกเมนูชีสพายสุดโปรดจากร้าน <span class="font-semibold text-bakery-800">DEKAUAN</span> แล้วกดปุ่มโหวตเพื่อส่งกำลังใจให้เราทำขนมอร่อยๆ ต่อไป!
+            </p>
+        </div>
+
+        <!-- Cheese Pie Voting Grid (4 Items) -->
+        <div id="pie-cards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+            <!-- Dynamic cards will be rendered by JS -->
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full bg-bakery-900 text-bakery-200 text-center py-5 border-t border-bakery-800 text-xs md:text-sm mt-12">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
+            <p>© 2026 DEKAUAN (เด็กลูกอ้วน Bakery). All rights reserved.</p>
+            <p class="text-bakery-400">ระบบโหวตสินค้าเบเกอรี่หน้าร้าน SPA</p>
+        </div>
+    </footer>
+
+    <!-- ========================================== -->
+    <!-- MODALS & OVERLAYS                          -->
+    <!-- ========================================== -->
+
+    <!-- 1. VOTING SUCCESS MODAL (Checkmark & Fireworks) -->
+    <div id="vote-success-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white rounded-3xl p-6 md:p-8 max-w-sm w-11/12 text-center shadow-2xl transform scale-90 transition-transform duration-300 border-4 border-bakery-200 relative overflow-hidden" id="vote-success-card">
+            
+            <!-- Decorative circle -->
+            <div class="absolute -top-12 -right-12 w-28 h-28 bg-amber-100 rounded-full opacity-50"></div>
+            <div class="absolute -bottom-12 -left-12 w-28 h-28 bg-bakery-100 rounded-full opacity-50"></div>
+
+            <!-- Animated Green Checkmark SVG -->
+            <div class="w-24 h-24 mx-auto mb-4 relative flex items-center justify-center">
+                <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center animate-scale-in shadow-inner">
+                    <svg class="w-12 h-12 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="checkmark-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <h3 class="text-xl md:text-2xl font-bold text-bakery-chocolate mb-1">โหวตสำเร็จแล้ว! 🎉</h3>
+            <p class="text-sm text-bakery-600 mb-4" id="voted-item-name">บันทึกผลโหวตชีสพายของคุณเรียบร้อย</p>
+            <p class="text-xs text-slate-400 mb-5">ขอบคุณที่ร่วมสนุกกับร้าน DEKAUAN ครับ/ค่ะ ❤️</p>
+
+            <!-- Reset Countdown / Next Vote Button -->
+            <button onclick="closeSuccessModal()" class="w-full bg-bakery-chocolate hover:bg-bakery-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all active:scale-95 text-sm flex items-center justify-center space-x-2">
+                <span>สำหรับคนถัดไปโหวตต่อ</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+            </button>
+
+            <!-- Progress bar timer -->
+            <div class="w-full bg-gray-100 h-1.5 rounded-full mt-4 overflow-hidden">
+                <div id="modal-timer-bar" class="bg-emerald-500 h-full w-full transition-all duration-[2000ms] ease-linear"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. ADMIN AUTH MODAL (Password Check) -->
+    <div id="admin-auth-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden">
+        <div class="bg-white rounded-2xl p-6 md:p-8 max-w-md w-11/12 shadow-2xl border border-bakery-200 relative">
+            <button onclick="closeAdminAuth()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-2 text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-amber-100 text-amber-800 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
+                    <i class="fa-solid fa-lock text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-bakery-chocolate">เข้าสู่ระบบผู้ดูแลระบบ</h3>
+                <p class="text-xs text-bakery-600 mt-1">กรุณากรอกรหัสผ่านเพื่อดูสรุปผลโหวต (Admin Only)</p>
+            </div>
+
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-bakery-800 uppercase tracking-wider mb-1">รหัสผ่านแอดมิน</label>
+                    <div class="relative">
+                        <input type="password" id="admin-password-input" placeholder="กรอกรหัสผ่าน..." required autocomplete="off"
+                            class="w-full px-4 py-3 border-2 border-bakery-200 rounded-xl focus:outline-none focus:border-bakery-accent text-center text-xl tracking-widest text-bakery-chocolate placeholder:text-gray-300 placeholder:tracking-normal placeholder:text-sm">
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                            <i id="eye-icon" class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <!-- Error Message -->
+                    <p id="auth-error-msg" class="text-red-500 text-xs font-medium mt-1.5 hidden flex items-center space-x-1">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <span>รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง</span>
+                    </p>
+                </div>
+
+                <div class="flex space-x-3 pt-2">
+                    <button type="button" onclick="closeAdminAuth()" class="w-1/2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2.5 rounded-xl text-sm transition">
+                        ยกเลิก
+                    </button>
+                    <button type="submit" class="w-1/2 bg-bakery-chocolate hover:bg-bakery-800 text-white font-semibold py-2.5 rounded-xl text-sm shadow-md transition active:scale-95">
+                        เข้าสู่ระบบ
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 3. ADMIN DASHBOARD MODAL (Results & Management) -->
+    <div id="admin-dashboard-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden p-3 md:p-6 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-3xl w-full shadow-2xl border border-bakery-200 my-auto overflow-hidden flex flex-col max-h-[90vh]">
+            
+            <!-- Dashboard Header -->
+            <div class="bg-bakery-900 text-white p-4 md:p-6 flex items-center justify-between border-b border-bakery-800">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-amber-500/20 rounded-xl border border-amber-400/30 flex items-center justify-center text-amber-300">
+                        <i class="fa-solid fa-chart-pie text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg md:text-xl font-bold leading-none">สรุปผลการโหวตหน้าร้าน</h3>
+                        <p class="text-xs text-amber-200/80 mt-1">แผงควบคุมผู้ดูแลระบบ DEKAUAN Bakery</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="closeAdminDashboard()" class="text-gray-300 hover:text-white bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg text-xs transition">
+                        <i class="fa-solid fa-xmark mr-1"></i> ปิด
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Body -->
+            <div class="p-4 md:p-6 overflow-y-auto space-y-6 flex-grow bg-bakery-50/50">
+
+                <!-- Summary Cards Row -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <!-- Card 1: Total Votes -->
+                    <div class="bg-white p-4 rounded-2xl border border-bakery-200 shadow-sm flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-amber-100 text-amber-700 rounded-xl flex items-center justify-center text-xl font-bold">
+                            <i class="fa-solid fa-check-to-slot"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-bakery-500 uppercase">ยอดโหวตรวมทั้งหมด</p>
+                            <h4 id="dash-total-votes" class="text-2xl font-extrabold text-bakery-chocolate">0</h4>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Top Voted Menu -->
+                    <div class="bg-white p-4 rounded-2xl border border-bakery-200 shadow-sm flex items-center space-x-4 sm:col-span-2">
+                        <div class="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-xl flex items-center justify-center text-xl font-bold">
+                            <i class="fa-solid fa-crown text-amber-500"></i>
+                        </div>
+                        <div class="overflow-hidden">
+                            <p class="text-xs font-semibold text-bakery-500 uppercase">เมนูยอดนิยมอันดับ 1 🔥</p>
+                            <h4 id="dash-top-menu" class="text-lg font-bold text-bakery-chocolate truncate">-</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tally Breakdown Section -->
+                <div class="bg-white p-4 md:p-6 rounded-2xl border border-bakery-200 shadow-sm">
+                    <h4 class="text-sm font-bold text-bakery-chocolate uppercase tracking-wider mb-4 flex items-center justify-between">
+                        <span>คะแนนแยกตามเมนู</span>
+                        <span class="text-xs font-normal text-bakery-500">อัปเดตเรียลไทม์</span>
+                    </h4>
+
+                    <div id="admin-tally-list" class="space-y-4">
+                        <!-- Dynamic Tally Rows -->
+                    </div>
+                </div>
+
+                <!-- Admin Action Toolbar -->
+                <div class="flex flex-wrap gap-3 pt-2">
+                    <button onclick="exportVoteDataCSV()" class="flex-1 min-w-[140px] bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-medium text-xs md:text-sm flex items-center justify-center space-x-2 shadow-sm transition">
+                        <i class="fa-solid fa-file-csv"></i>
+                        <span>ดาวน์โหลด CSV</span>
+                    </button>
+                    <button onclick="exportVoteDataJSON()" class="flex-1 min-w-[140px] bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl font-medium text-xs md:text-sm flex items-center justify-center space-x-2 shadow-sm transition">
+                        <i class="fa-solid fa-code"></i>
+                        <span>ส่งออก JSON</span>
+                    </button>
+                    <button onclick="promptResetVotes()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-4 py-2.5 rounded-xl font-medium text-xs md:text-sm flex items-center justify-center space-x-1.5 transition">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>รีเซ็ตคะแนนทั้งหมด</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. EDIT IMAGE URL MODAL (Admin Feature) -->
+    <div id="edit-img-modal" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm hidden">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-11/12 shadow-2xl border border-bakery-200">
+            <h3 class="text-lg font-bold text-bakery-chocolate mb-1">แก้ไข URL รูปภาพเมนู</h3>
+            <p id="edit-img-menu-name" class="text-xs text-bakery-600 mb-4 font-medium">-</p>
+
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-bakery-700 mb-1">URL รูปภาพใหม่ (Image Link)</label>
+                    <input type="url" id="edit-img-url-input" placeholder="https://example.com/image.jpg"
+                        class="w-full px-3 py-2 text-sm border border-bakery-300 rounded-lg focus:outline-none focus:border-bakery-accent">
+                </div>
+
+                <div class="bg-bakery-50 p-2 rounded-lg text-xs text-bakery-600">
+                    <p class="font-semibold mb-1"><i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i> คำแนะนำ:</p>
+                    <p>สามารถวางลิงก์รูปภาพชีสพายจาก Unsplash, Imgur หรือเซิร์ฟเวอร์รูปภาพอื่นๆ ได้ทันที</p>
+                </div>
+            </div>
+
+            <div class="flex space-x-3 mt-6">
+                <button onclick="closeEditImgModal()" class="w-1/2 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-xl text-xs font-medium">ยกเลิก</button>
+                <button onclick="saveMenuImageURL()" class="w-1/2 bg-bakery-chocolate hover:bg-bakery-800 text-white py-2 rounded-xl text-xs font-semibold">บันทึกรูปภาพ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. CONFIRM RESET MODAL -->
+    <div id="reset-confirm-modal" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm hidden">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-11/12 shadow-2xl border border-red-100 text-center">
+            <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="text-lg font-bold text-gray-800">ยืนยันการรีเซ็ตคะแนน?</h3>
+            <p class="text-xs text-gray-500 mt-1 mb-5">คะแนนโหวตทั้งหมดจะถูกลบเป็น 0 และไม่สามารถกู้คืนกลับมาได้</p>
+            <div class="flex space-x-3">
+                <button onclick="closeResetModal()" class="w-1/2 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2.5 rounded-xl text-xs font-medium">ยกเลิก</button>
+                <button onclick="executeResetVotes()" class="w-1/2 bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-xl text-xs font-semibold shadow-md">ยืนยันรีเซ็ต</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT LOGIC                           -->
+    <!-- ========================================== -->
+    <script>
+        // --- 1. Initial State & Data Definition ---
+        const ADMIN_PASSWORD_CORRECT = "374817";
+
+        // Default Pie Data
+        const DEFAULT_PIES = [
+            {
+                id: 'blueberry',
+                nameTH: 'Blueberry Cheese Pie',
+                nameEN: 'บลูเบอร์รี่ชีสพาย',
+                desc: 'ชีสเนียนนุ่ม อัดแน่นด้วยซอสบลูเบอร์รี่สดเข้มข้น หวานซ่อนเปรี้ยวลงตัว',
+                badge: 'Popular 🫐',
+                defaultImg: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=800&q=80'
+            },
+            {
+                id: 'strawberry',
+                nameTH: 'Strawberry Cheese Pie',
+                nameEN: 'สตรอว์เบอร์รี่ชีสพาย',
+                desc: 'สตรอว์เบอร์รี่สดลูกโต ซอสโฮมเมดฉ่ำๆ บนครีมชีสพรีเมียมหอมนุ่ม',
+                badge: 'Fresh 🍓',
+                defaultImg: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=800&q=80'
+            },
+            {
+                id: 'chocolate',
+                nameTH: 'Chocolate Cheese Pie',
+                nameEN: 'ช็อกโกแลตชีสพาย',
+                desc: 'เข้มข้นถึงใจช็อกโกแลตแท้ ผสานความหอมมันของครีมชีสเข้ากันเนียนนุ่ม',
+                badge: 'Rich 🍫',
+                defaultImg: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=800&q=80'
+            },
+            {
+                id: 'oreo',
+                nameTH: 'Oreo Cheese Pie',
+                nameEN: 'โอรีโอชีสพาย',
+                desc: 'ฐานโอรีโอกรอบกรุบกรอบ พร้อมเนื้อชีสผสมชิ้นโอรีโอกรุบกรอบจัดเต็ม',
+                badge: 'Must Try 🍪',
+                defaultImg: 'https://images.unsplash.com/photo-1587314168485-3236d6710814?auto=format&fit=crop&w=800&q=80'
+            }
+        ];
+
+        let votesState = {};
+        let imagesState = {};
+        let autoCloseTimer = null;
+        let activeEditPieId = null;
+
+        // Fallback SVG placeholder image URL generator if link breaks
+        function getFallbackImage(text) {
+            return `https://placehold.co/600x400/5C3D2E/FFF8F0?text=${encodeURIComponent(text)}`;
+        }
+
+        // --- 2. Load and Save Functions (localStorage) ---
+        function loadData() {
+            // Load Votes
+            const savedVotes = localStorage.getItem('dekauan_votes_v1');
+            if (savedVotes) {
+                try {
+                    votesState = JSON.parse(savedVotes);
+                } catch (e) {
+                    initEmptyVotes();
+                }
+            } else {
+                initEmptyVotes();
+            }
+
+            // Load Custom Images
+            const savedImages = localStorage.getItem('dekauan_pie_images_v1');
+            if (savedImages) {
+                try {
+                    imagesState = JSON.parse(savedImages);
+                } catch (e) {
+                    imagesState = {};
+                }
+            }
+        }
+
+        function initEmptyVotes() {
+            votesState = {};
+            DEFAULT_PIES.forEach(pie => {
+                votesState[pie.id] = 0;
+            });
+            saveVotes();
+        }
+
+        function saveVotes() {
+            localStorage.setItem('dekauan_votes_v1', JSON.stringify(votesState));
+        }
+
+        function saveImagesState() {
+            localStorage.setItem('dekauan_pie_images_v1', JSON.stringify(imagesState));
+        }
+
+        // --- 3. Render Voter Cards Grid ---
+        function renderVoterGrid() {
+            const container = document.getElementById('pie-cards-grid');
+            container.innerHTML = '';
+
+            DEFAULT_PIES.forEach(pie => {
+                const imgUrl = imagesState[pie.id] || pie.defaultImg;
+
+                const cardHtml = `
+                    <div class="bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-bakery-200 flex flex-col justify-between group">
+                        
+                        <!-- Image Container -->
+                        <div class="relative w-full h-48 md:h-52 overflow-hidden bg-bakery-100">
+                            <img src="${imgUrl}" 
+                                 alt="${pie.nameTH}" 
+                                 onerror="this.onerror=null; this.src='${getFallbackImage(pie.nameTH)}';"
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <span class="absolute top-3 right-3 bg-white/90 backdrop-blur-md text-bakery-chocolate text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm border border-bakery-200">
+                                ${pie.badge}
+                            </span>
+                        </div>
+
+                        <!-- Content Body -->
+                        <div class="p-5 flex-grow flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-lg font-bold text-bakery-chocolate leading-snug group-hover:text-amber-700 transition-colors">
+                                    ${pie.nameTH}
+                                </h3>
+                                <p class="text-xs text-bakery-600 font-medium mb-2">${pie.nameEN}</p>
+                                <p class="text-xs text-slate-500 leading-relaxed font-light mb-4">
+                                    ${pie.desc}
+                                </p>
+                            </div>
+
+                            <!-- Vote Button -->
+                            <button onclick="handleCastVote('${pie.id}')" 
+                                    class="w-full bg-bakery-chocolate hover:bg-bakery-800 text-white font-semibold py-3 px-4 rounded-2xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center space-x-2 active:scale-95 text-sm cursor-pointer">
+                                <i class="fa-solid fa-heart text-amber-400 animate-pulse"></i>
+                                <span>โหวตเมนูนี้</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += cardHtml;
+            });
+        }
+
+        // --- 4. Voting Action & Confetti Animation ---
+        function handleCastVote(pieId) {
+            // Increment count in state
+            if (typeof votesState[pieId] !== 'number') {
+                votesState[pieId] = 0;
+            }
+            votesState[pieId] += 1;
+            saveVotes();
+
+            // Find Pie Name
+            const pie = DEFAULT_PIES.find(p => p.id === pieId);
+            const pieName = pie ? pie.nameTH : '';
+
+            // Show Success Modal & Fire Confetti
+            showVoteSuccessModal(pieName);
+            triggerFireworks();
+        }
+
+        function triggerFireworks() {
+            if (typeof confetti === 'function') {
+                // First burst
+                confetti({
+                    particleCount: 80,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+
+                // Side cannons
+                setTimeout(() => {
+                    confetti({
+                        particleCount: 40,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 }
+                    });
+                    confetti({
+                        particleCount: 40,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 }
+                    });
+                }, 150);
+            }
+        }
+
+        function showVoteSuccessModal(menuName) {
+            const modal = document.getElementById('vote-success-modal');
+            const card = document.getElementById('vote-success-card');
+            const nameEl = document.getElementById('voted-item-name');
+            const timerBar = document.getElementById('modal-timer-bar');
+
+            nameEl.textContent = `เมนู: ${menuName}`;
+
+            // Reset Timer bar style
+            timerBar.style.transition = 'none';
+            timerBar.style.width = '100%';
+
+            // Display modal
+            modal.classList.remove('pointer-events-none');
+            modal.classList.remove('opacity-0');
+            modal.classList.add('opacity-100');
+            card.classList.remove('scale-90');
+            card.classList.add('scale-100');
+
+            // Trigger progress bar countdown
+            setTimeout(() => {
+                timerBar.style.transition = 'width 2000ms linear';
+                timerBar.style.width = '0%';
+            }, 50);
+
+            // Clear old timer if any
+            if (autoCloseTimer) clearTimeout(autoCloseTimer);
+
+            // Auto close after 2.1 seconds so next user can vote immediately
+            autoCloseTimer = setTimeout(() => {
+                closeSuccessModal();
+            }, 2100);
+        }
+
+        function closeSuccessModal() {
+            if (autoCloseTimer) clearTimeout(autoCloseTimer);
+            const modal = document.getElementById('vote-success-modal');
+            const card = document.getElementById('vote-success-card');
+
+            modal.classList.remove('opacity-100');
+            modal.classList.add('opacity-0');
+            card.classList.remove('scale-100');
+            card.classList.add('scale-90');
+
+            setTimeout(() => {
+                modal.classList.add('pointer-events-none');
+            }, 300);
+        }
+
+        // --- 5. Admin Authentication ---
+        function openAdminAuth() {
+            const modal = document.getElementById('admin-auth-modal');
+            const pwdInput = document.getElementById('admin-password-input');
+            const errEl = document.getElementById('auth-error-msg');
+            
+            pwdInput.value = '';
+            errEl.classList.add('hidden');
+            modal.classList.remove('hidden');
+            pwdInput.focus();
+        }
+
+        function closeAdminAuth() {
+            document.getElementById('admin-auth-modal').classList.add('hidden');
+        }
+
+        function togglePasswordVisibility() {
+            const pwdInput = document.getElementById('admin-password-input');
+            const icon = document.getElementById('eye-icon');
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                pwdInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const inputVal = document.getElementById('admin-password-input').value.trim();
+            const errEl = document.getElementById('auth-error-msg');
+
+            if (inputVal === ADMIN_PASSWORD_CORRECT) {
+                closeAdminAuth();
+                openAdminDashboard();
+            } else {
+                errEl.classList.remove('hidden');
+                document.getElementById('admin-password-input').focus();
+            }
+        }
+
+        // --- 6. Admin Dashboard & Analytics ---
+        function openAdminDashboard() {
+            renderAdminDashboardContent();
+            document.getElementById('admin-dashboard-modal').classList.remove('hidden');
+        }
+
+        function closeAdminDashboard() {
+            document.getElementById('admin-dashboard-modal').classList.add('hidden');
+        }
+
+        function renderAdminDashboardContent() {
+            // Calculate Totals
+            let totalVotes = 0;
+            let maxVotes = -1;
+            let topMenu = '-';
+
+            DEFAULT_PIES.forEach(pie => {
+                const count = votesState[pie.id] || 0;
+                totalVotes += count;
+                if (count > maxVotes && count > 0) {
+                    maxVotes = count;
+                    topMenu = pie.nameTH;
+                }
+            });
+
+            document.getElementById('dash-total-votes').textContent = totalVotes.toLocaleString();
+            document.getElementById('dash-top-menu').textContent = topMenu;
+
+            // Render Breakdown List
+            const container = document.getElementById('admin-tally-list');
+            container.innerHTML = '';
+
+            DEFAULT_PIES.forEach(pie => {
+                const count = votesState[pie.id] || 0;
+                const percentage = totalVotes > 0 ? ((count / totalVotes) * 100).toFixed(1) : 0;
+                const imgUrl = imagesState[pie.id] || pie.defaultImg;
+
+                const rowHtml = `
+                    <div class="bg-bakery-50 p-3 md:p-4 rounded-xl border border-bakery-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center space-x-3 overflow-hidden">
+                                <img src="${imgUrl}" alt="${pie.nameTH}" class="w-10 h-10 rounded-lg object-cover border border-bakery-300 flex-shrink-0">
+                                <div class="truncate">
+                                    <h5 class="text-sm font-bold text-bakery-chocolate truncate">${pie.nameTH}</h5>
+                                    <p class="text-xs text-bakery-500">${pie.nameEN}</p>
+                                </div>
+                            </div>
+                            <div class="text-right flex-shrink-0 ml-2">
+                                <span class="text-base font-extrabold text-bakery-chocolate">${count}</span>
+                                <span class="text-xs text-bakery-500">โหวต (${percentage}%)</span>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="w-full bg-gray-200 h-3 rounded-full overflow-hidden flex">
+                            <div class="bg-amber-700 h-full transition-all duration-500 rounded-full" style="width: ${percentage}%"></div>
+                        </div>
+
+                        <!-- Admin Actions for Item -->
+                        <div class="mt-2 text-right">
+                            <button onclick="openEditImgModal('${pie.id}')" class="text-xs text-amber-700 hover:text-amber-900 font-medium inline-flex items-center space-x-1">
+                                <i class="fa-solid fa-image text-xs"></i>
+                                <span>เปลี่ยนรูปภาพ</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += rowHtml;
+            });
+        }
+
+        // --- 7. Custom Image Management ---
+        function openEditImgModal(pieId) {
+            activeEditPieId = pieId;
+            const pie = DEFAULT_PIES.find(p => p.id === pieId);
+            if (!pie) return;
+
+            document.getElementById('edit-img-menu-name').textContent = pie.nameTH;
+            document.getElementById('edit-img-url-input').value = imagesState[pieId] || pie.defaultImg;
+            document.getElementById('edit-img-modal').classList.remove('hidden');
+        }
+
+        function closeEditImgModal() {
+            document.getElementById('edit-img-modal').classList.add('hidden');
+            activeEditPieId = null;
+        }
+
+        function saveMenuImageURL() {
+            if (!activeEditPieId) return;
+            const urlInput = document.getElementById('edit-img-url-input').value.trim();
+            if (urlInput) {
+                imagesState[activeEditPieId] = urlInput;
+                saveImagesState();
+                renderVoterGrid();
+                renderAdminDashboardContent();
+            }
+            closeEditImgModal();
+        }
+
+        // --- 8. Data Export & Reset ---
+        function exportVoteDataCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+            csvContent += "ID,Menu Name (TH),Menu Name (EN),Votes Count\n";
+
+            DEFAULT_PIES.forEach(pie => {
+                const count = votesState[pie.id] || 0;
+                csvContent += `"${pie.id}","${pie.nameTH}","${pie.nameEN}",${count}\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `DEKAUAN_Vote_Results_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function exportVoteDataJSON() {
+            const dataToExport = {
+                brand: "DEKAUAN Bakery",
+                exportedAt: new Date().toISOString(),
+                votes: votesState
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataToExport, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `DEKAUAN_Vote_Results_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function promptResetVotes() {
+            document.getElementById('reset-confirm-modal').classList.remove('hidden');
+        }
+
+        function closeResetModal() {
+            document.getElementById('reset-confirm-modal').classList.add('hidden');
+        }
+
+        function executeResetVotes() {
+            initEmptyVotes();
+            renderAdminDashboardContent();
+            closeResetModal();
+        }
+
+        // --- 9. Initial Load on Page Ready ---
+        window.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            renderVoterGrid();
+        });
+    </script>
+</body>
+</html>
