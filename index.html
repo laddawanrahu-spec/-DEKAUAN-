@@ -9,7 +9,7 @@
     <!-- Google Fonts: Prompt -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Canvas Confetti CDN -->
@@ -50,21 +50,81 @@
             color: #4D2D15;
             user-select: none;
             -webkit-user-select: none;
+            overflow-x: hidden;
         }
 
-        /* Animated background pattern */
+        /* Animated background pattern with light flow */
         .bg-pattern {
             background-color: #FAF6F0;
-            background-image: radial-gradient(#C8A27A 0.75px, transparent 0.75px), radial-gradient(#C8A27A 0.75px, #FAF6F0 0.75px);
-            background-size: 30px 30px;
-            background-position: 0 0,15px 15px;
-            opacity: 0.85;
+            background-image: radial-gradient(#C8A27A 0.85px, transparent 0.85px), radial-gradient(#C8A27A 0.85px, #FAF6F0 0.85px);
+            background-size: 32px 32px;
+            background-position: 0 0, 16px 16px;
+        }
+
+        /* Floating background elements animations */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-18px) rotate(8deg); }
+        }
+
+        @keyframes drift {
+            0% { transform: translate(0px, 0px) rotate(0deg); }
+            50% { transform: translate(12px, -20px) rotate(-12deg); }
+            100% { transform: translate(0px, 0px) rotate(0deg); }
+        }
+
+        @keyframes spinSlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 4px 15px -3px rgba(92, 61, 46, 0.4); }
+            50% { box-shadow: 0 8px 25px 2px rgba(212, 163, 115, 0.6); }
+        }
+
+        @keyframes shimmerSweep {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(200%); }
+        }
+
+        @keyframes floatUpFade {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            50% { opacity: 1; transform: translateY(-40px) scale(1.2); }
+            100% { opacity: 0; transform: translateY(-80px) scale(0.9); }
+        }
+
+        @keyframes shakeError {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+
+        .animate-float-1 { animation: floatSlow 5s ease-in-out infinite; }
+        .animate-float-2 { animation: drift 7s ease-in-out infinite 1s; }
+        .animate-float-3 { animation: floatSlow 6s ease-in-out infinite 2s; }
+        .animate-float-4 { animation: drift 8s ease-in-out infinite 0.5s; }
+        .animate-spin-slow { animation: spinSlow 20s linear infinite; }
+        .animate-pulse-glow { animation: pulseGlow 2.5s infinite; }
+        .shake-animation { animation: shakeError 0.4s ease-in-out; }
+
+        .shimmer-badge {
+            position: relative;
+            overflow: hidden;
+        }
+        .shimmer-badge::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            transform: translateX(-100%);
+            animation: shimmerSweep 3.5s infinite;
         }
 
         /* Checkmark Animation */
         @keyframes scaleIn {
             0% { transform: scale(0); opacity: 0; }
-            60% { transform: scale(1.15); opacity: 1; }
+            60% { transform: scale(1.2); opacity: 1; }
             100% { transform: scale(1); opacity: 1; }
         }
 
@@ -74,13 +134,33 @@
         }
 
         .animate-scale-in {
-            animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation: scaleIn 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
         .checkmark-path {
             stroke-dasharray: 100;
             stroke-dashoffset: 100;
             animation: drawCheck 0.5s ease-in-out 0.2s forwards;
+        }
+
+        /* Card Levitation 3D Hover */
+        .pie-card {
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        .pie-card:hover {
+            transform: translateY(-8px) scale(1.015);
+            box-shadow: 0 20px 30px -10px rgba(77, 45, 21, 0.15);
+        }
+
+        /* Floating +1 Vote Badge */
+        .vote-plus-badge {
+            position: absolute;
+            pointer-events: none;
+            animation: floatUpFade 1s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+            z-index: 40;
+            font-weight: 800;
+            color: #D4A373;
+            text-shadow: 0 2px 8px rgba(92, 61, 46, 0.4);
         }
 
         /* Custom Scrollbar for admin modal */
@@ -98,18 +178,28 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between bg-pattern relative overflow-x-hidden">
 
+    <!-- FLOATING BACKGROUND DECORATIVE ELEMENTS -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none opacity-40">
+        <span class="absolute top-[12%] left-[5%] text-2xl animate-float-1">🧀</span>
+        <span class="absolute top-[25%] right-[6%] text-xl animate-float-2">✨</span>
+        <span class="absolute top-[55%] left-[3%] text-2xl animate-float-3">🍓</span>
+        <span class="absolute top-[75%] right-[4%] text-2xl animate-float-4">❤️</span>
+        <span class="absolute top-[40%] right-[12%] text-lg animate-float-1">⭐</span>
+        <span class="absolute bottom-[10%] left-[8%] text-xl animate-spin-slow">✨</span>
+    </div>
+
     <!-- Header Banner -->
-    <header class="w-full bg-white/90 backdrop-blur-md border-b border-bakery-200 sticky top-0 z-30 shadow-sm">
+    <header class="w-full bg-white/90 backdrop-blur-md border-b border-bakery-200 sticky top-0 z-30 shadow-sm transition-all duration-300">
         <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
             <!-- Brand Logo & Name -->
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-                <!-- DEKAUAN Official Cheesecake Cup SVG Round Badge Logo -->
-                <div class="w-12 h-12 md:w-14 md:h-14 flex-shrink-0 transition-transform duration-300 hover:scale-105">
+            <div class="flex items-center space-x-3 cursor-pointer group" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                <!-- DEKAUAN Official Cheesecake Cup SVG Round Badge Logo with Animation -->
+                <div class="w-12 h-12 md:w-14 md:h-14 flex-shrink-0 transition-transform duration-300 group-hover:scale-110">
                     <svg viewBox="0 0 200 200" class="w-full h-full drop-shadow-sm rounded-full">
                         <!-- Outer badge background circle -->
                         <circle cx="100" cy="100" r="96" fill="#FBF3E7" stroke="#EEDCC8" stroke-width="3"/>
-                        <!-- Inner stitched dashed ring -->
-                        <circle cx="100" cy="100" r="85" fill="none" stroke="#D3B690" stroke-width="2.5" stroke-dasharray="6,4"/>
+                        <!-- Inner stitched dashed ring (Slow Rotating) -->
+                        <circle cx="100" cy="100" r="85" fill="none" stroke="#D3B690" stroke-width="2.5" stroke-dasharray="6,4" class="origin-center animate-spin-slow"/>
                         
                         <!-- Top Whisk Wire Beater Icon -->
                         <g stroke="#4A200E" stroke-linecap="round" stroke-linejoin="round">
@@ -123,7 +213,7 @@
                         </g>
 
                         <!-- Heart above D/e -->
-                        <path d="M68 68 C64 62 56 66 61 73 L68 80 L75 73 C80 66 72 62 68 68 Z" fill="#4A200E"/>
+                        <path d="M68 68 C64 62 56 66 61 73 L68 80 L75 73 C80 66 72 62 68 68 Z" fill="#4A200E" class="animate-bounce"/>
 
                         <!-- "Dekauan" Brand Text -->
                         <text x="100" y="113" font-family="'Prompt', cursive, sans-serif" font-weight="800" font-size="31" fill="#4A200E" text-anchor="middle" letter-spacing="-0.5">Dekauan</text>
@@ -138,39 +228,40 @@
                         <!-- Cheese Drip Graphic at bottom -->
                         <path d="M66 138 C80 138 88 144 93 150 C96 154 98 165 101 165 C104 165 106 154 109 150 C114 144 122 138 136 138 C124 145 116 168 101 168 C86 168 78 145 66 138 Z" fill="#F5C869" stroke="#4A200E" stroke-width="1.5"/>
                         <!-- Cheese Drip Gloss Highlight -->
-                        <ellipse cx="101" cy="161" rx="2" ry="3" fill="#FFF8EB"/>
+                        <ellipse cx="101" cy="161" rx="2" ry="3" fill="#FFF8EB" class="animate-pulse"/>
                         <circle cx="63" cy="133" r="1.5" fill="#4A200E"/>
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-xl md:text-2xl font-bold tracking-tight text-bakery-chocolate leading-none">
-                        DEKAUAN <span class="text-xs md:text-sm font-normal text-bakery-600 block sm:inline">Cheesecake Cup</span>
+                    <h1 class="text-xl md:text-2xl font-bold tracking-tight text-bakery-chocolate leading-none flex items-center gap-1.5">
+                        <span>DEKAUAN</span>
+                        <span class="text-xs md:text-sm font-normal text-bakery-600 block sm:inline">Cheesecake Cup</span>
                     </h1>
                     <p class="text-xs text-bakery-500 font-light">Cheese Pie Homemade Voting</p>
                 </div>
             </div>
 
             <!-- Admin Login Button -->
-            <button id="open-admin-btn" onclick="openAdminAuth()" class="flex items-center space-x-2 bg-bakery-100 hover:bg-bakery-200 text-bakery-800 px-3 py-1.5 md:px-4 md:py-2 rounded-full transition-all duration-200 border border-bakery-300 text-xs md:text-sm font-medium shadow-sm active:scale-95">
-                <i class="fa-solid fa-user-shield text-bakery-700"></i>
+            <button id="open-admin-btn" onclick="openAdminAuth()" class="flex items-center space-x-2 bg-bakery-100 hover:bg-bakery-200 text-bakery-800 px-3 py-1.5 md:px-4 md:py-2 rounded-full transition-all duration-300 border border-bakery-300 text-xs md:text-sm font-medium shadow-sm hover:shadow active:scale-95 group">
+                <i class="fa-solid fa-user-shield text-bakery-700 transition-transform duration-300 group-hover:rotate-12"></i>
                 <span class="hidden sm:inline">ผู้ดูแลระบบ</span>
             </button>
         </div>
     </header>
 
     <!-- Main Content Container -->
-    <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-6 md:py-10 flex flex-col items-center">
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-6 md:py-10 flex flex-col items-center relative z-10">
 
         <!-- Welcome Banner -->
-        <div class="text-center max-w-2xl mb-8 md:mb-12">
-            <span class="inline-block px-3.5 py-1 bg-bakery-200 text-bakery-800 rounded-full text-xs font-semibold uppercase tracking-wider mb-2 border border-bakery-300">
-                <i class="fa-solid fa-star text-amber-600 mr-1"></i> Customer Choice 2026
+        <div class="text-center max-w-2xl mb-8 md:mb-12 transition-all duration-500 transform translate-y-0 opacity-100">
+            <span class="inline-block px-4 py-1.5 bg-bakery-200 text-bakery-800 rounded-full text-xs font-semibold uppercase tracking-wider mb-3 border border-bakery-300 shimmer-badge shadow-sm">
+                <i class="fa-solid fa-star text-amber-600 mr-1 animate-pulse"></i> CUSTOMER CHOICE 2026
             </span>
-            <h2 class="text-2xl md:text-4xl font-extrabold text-bakery-chocolate mb-3 leading-tight">
+            <h2 class="text-2xl md:text-4xl font-extrabold text-bakery-chocolate mb-3 leading-tight tracking-tight">
                 ร่วมโหวตเมนู "ชีสพาย" ในดวงใจของคุณ
             </h2>
-            <p class="text-sm md:text-base text-bakery-700 font-light max-w-xl mx-auto">
-                เลือกเมนูชีสพายสุดโปรดจากร้าน <span class="font-semibold text-bakery-800">DEKAUAN</span> แล้วกดปุ่มโหวตเพื่อส่งกำลังใจให้เราทำขนมอร่อยๆ ต่อไป!
+            <p class="text-sm md:text-base text-bakery-700 font-light max-w-xl mx-auto leading-relaxed">
+                เลือกเมนูชีสพายสุดโปรดจากร้าน <span class="font-bold text-bakery-chocolate">DEKAUAN</span> แล้วกดปุ่มโหวตเพื่อส่งกำลังใจให้เราทำขนมอร่อยๆ ต่อไป!
             </p>
         </div>
 
@@ -182,7 +273,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="w-full bg-bakery-900 text-bakery-200 text-center py-5 border-t border-bakery-800 text-xs md:text-sm mt-12">
+    <footer class="w-full bg-bakery-900 text-bakery-200 text-center py-5 border-t border-bakery-800 text-xs md:text-sm mt-12 relative z-10">
         <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
             <p>© 2026 DEKAUAN (เด็กลูกอ้วน Bakery). All rights reserved.</p>
             <p class="text-bakery-400">ระบบโหวตสินค้าเบเกอรี่หน้าร้าน SPA</p>
@@ -195,10 +286,10 @@
 
     <!-- 1. VOTING SUCCESS MODAL (Checkmark & Fireworks) -->
     <div id="vote-success-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="bg-white rounded-3xl p-6 md:p-8 max-w-sm w-11/12 text-center shadow-2xl transform scale-90 transition-transform duration-300 border-4 border-bakery-200 relative overflow-hidden" id="vote-success-card">
+        <div class="bg-white rounded-3xl p-6 md:p-8 max-w-sm w-11/12 text-center shadow-2xl transform scale-90 transition-all duration-300 border-4 border-bakery-200 relative overflow-hidden" id="vote-success-card">
             
             <!-- Decorative circle -->
-            <div class="absolute -top-12 -right-12 w-28 h-28 bg-amber-100 rounded-full opacity-50"></div>
+            <div class="absolute -top-12 -right-12 w-28 h-28 bg-amber-100 rounded-full opacity-50 animate-pulse"></div>
             <div class="absolute -bottom-12 -left-12 w-28 h-28 bg-bakery-100 rounded-full opacity-50"></div>
 
             <!-- Animated Green Checkmark SVG -->
@@ -211,11 +302,11 @@
             </div>
 
             <h3 class="text-xl md:text-2xl font-bold text-bakery-chocolate mb-1">โหวตสำเร็จแล้ว! 🎉</h3>
-            <p class="text-sm text-bakery-600 mb-4" id="voted-item-name">บันทึกผลโหวตชีสพายของคุณเรียบร้อย</p>
+            <p class="text-sm text-bakery-600 mb-4 font-medium" id="voted-item-name">บันทึกผลโหวตชีสพายของคุณเรียบร้อย</p>
             <p class="text-xs text-slate-400 mb-5">ขอบคุณที่ร่วมสนุกกับร้าน DEKAUAN ครับ/ค่ะ ❤️</p>
 
             <!-- Reset Countdown / Next Vote Button -->
-            <button onclick="closeSuccessModal()" class="w-full bg-bakery-chocolate hover:bg-bakery-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all active:scale-95 text-sm flex items-center justify-center space-x-2">
+            <button onclick="closeSuccessModal()" class="w-full bg-bakery-chocolate hover:bg-bakery-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all active:scale-95 text-sm flex items-center justify-center space-x-2 cursor-pointer">
                 <span>สำหรับคนถัดไปโหวตต่อ</span>
                 <i class="fa-solid fa-arrow-right text-xs"></i>
             </button>
@@ -229,14 +320,14 @@
 
     <!-- 2. ADMIN AUTH MODAL (Password Check) -->
     <div id="admin-auth-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden">
-        <div class="bg-white rounded-2xl p-6 md:p-8 max-w-md w-11/12 shadow-2xl border border-bakery-200 relative">
+        <div id="admin-auth-card" class="bg-white rounded-2xl p-6 md:p-8 max-w-md w-11/12 shadow-2xl border border-bakery-200 relative transition-transform">
             <button onclick="closeAdminAuth()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-2 text-lg">
                 <i class="fa-solid fa-xmark"></i>
             </button>
 
             <div class="text-center mb-6">
                 <div class="w-16 h-16 bg-amber-100 text-amber-800 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
-                    <i class="fa-solid fa-lock text-2xl"></i>
+                    <i class="fa-solid fa-lock text-2xl animate-pulse"></i>
                 </div>
                 <h3 class="text-xl font-bold text-bakery-chocolate">เข้าสู่ระบบผู้ดูแลระบบ</h3>
                 <p class="text-xs text-bakery-600 mt-1">กรุณากรอกรหัสผ่านเพื่อดูสรุปผลโหวต (Admin Only)</p>
@@ -248,12 +339,12 @@
                     <div class="relative">
                         <input type="password" id="admin-password-input" placeholder="กรอกรหัสผ่าน..." required autocomplete="off"
                             class="w-full px-4 py-3 border-2 border-bakery-200 rounded-xl focus:outline-none focus:border-bakery-accent text-center text-xl tracking-widest text-bakery-chocolate placeholder:text-gray-300 placeholder:tracking-normal placeholder:text-sm">
-                        <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1">
                             <i id="eye-icon" class="fa-solid fa-eye"></i>
                         </button>
                     </div>
                     <!-- Error Message -->
-                    <p id="auth-error-msg" class="text-red-500 text-xs font-medium mt-1.5 hidden flex items-center space-x-1">
+                    <p id="auth-error-msg" class="text-red-500 text-xs font-medium mt-1.5 hidden flex items-center justify-center space-x-1">
                         <i class="fa-solid fa-circle-exclamation"></i>
                         <span>รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง</span>
                     </p>
@@ -312,7 +403,7 @@
                     <!-- Card 2: Top Voted Menu -->
                     <div class="bg-white p-4 rounded-2xl border border-bakery-200 shadow-sm flex items-center space-x-4 sm:col-span-2">
                         <div class="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-xl flex items-center justify-center text-xl font-bold">
-                            <i class="fa-solid fa-crown text-amber-500"></i>
+                            <i class="fa-solid fa-crown text-amber-500 animate-bounce"></i>
                         </div>
                         <div class="overflow-hidden">
                             <p class="text-xs font-semibold text-bakery-500 uppercase">เมนูยอดนิยมอันดับ 1 🔥</p>
@@ -335,15 +426,15 @@
 
                 <!-- Admin Action Toolbar -->
                 <div class="flex flex-wrap gap-3 pt-2">
-                    <button onclick="exportVoteDataCSV()" class="flex-1 min-w-[140px] bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-medium text-xs md:text-sm flex items-center justify-center space-x-2 shadow-sm transition">
+                    <button onclick="exportVoteDataCSV()" class="flex-1 min-w-[140px] bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-medium text-xs md:text-sm flex items-center justify-center space-x-2 shadow-sm transition active:scale-95">
                         <i class="fa-solid fa-file-csv"></i>
                         <span>ดาวน์โหลด CSV</span>
                     </button>
-                    <button onclick="exportVoteDataJSON()" class="flex-1 min-w-[140px] bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl font-medium text-xs md:text-sm flex items-center justify-center space-x-2 shadow-sm transition">
+                    <button onclick="exportVoteDataJSON()" class="flex-1 min-w-[140px] bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl font-medium text-xs md:text-sm flex items-center justify-center space-x-2 shadow-sm transition active:scale-95">
                         <i class="fa-solid fa-code"></i>
                         <span>ส่งออก JSON</span>
                     </button>
-                    <button onclick="promptResetVotes()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-4 py-2.5 rounded-xl font-medium text-xs md:text-sm flex items-center justify-center space-x-1.5 transition">
+                    <button onclick="promptResetVotes()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-4 py-2.5 rounded-xl font-medium text-xs md:text-sm flex items-center justify-center space-x-1.5 transition active:scale-95">
                         <i class="fa-solid fa-rotate-right"></i>
                         <span>รีเซ็ตคะแนนทั้งหมด</span>
                     </button>
@@ -449,7 +540,6 @@
 
         // --- 2. Load and Save Functions (localStorage) ---
         function loadData() {
-            // Load Votes
             const savedVotes = localStorage.getItem('dekauan_votes_v1');
             if (savedVotes) {
                 try {
@@ -461,7 +551,6 @@
                 initEmptyVotes();
             }
 
-            // Load Custom Images
             const savedImages = localStorage.getItem('dekauan_pie_images_v1');
             if (savedImages) {
                 try {
@@ -493,20 +582,21 @@
             const container = document.getElementById('pie-cards-grid');
             container.innerHTML = '';
 
-            DEFAULT_PIES.forEach(pie => {
+            DEFAULT_PIES.forEach((pie, idx) => {
                 const imgUrl = imagesState[pie.id] || pie.defaultImg;
 
                 const cardHtml = `
-                    <div class="bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-bakery-200 flex flex-col justify-between group">
+                    <div class="pie-card bg-white rounded-3xl overflow-hidden shadow-md border border-bakery-200 flex flex-col justify-between group relative">
                         
                         <!-- Image Container -->
                         <div class="relative w-full h-48 md:h-52 overflow-hidden bg-bakery-100">
                             <img src="${imgUrl}" 
                                  alt="${pie.nameTH}" 
                                  onerror="this.onerror=null; this.src='${getFallbackImage(pie.nameTH)}';"
-                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            <span class="absolute top-3 right-3 bg-white/90 backdrop-blur-md text-bakery-chocolate text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm border border-bakery-200">
-                                ${pie.badge}
+                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
+                            <span class="absolute top-3 right-3 bg-white/95 backdrop-blur-md text-bakery-chocolate text-xs font-semibold px-3 py-1 rounded-full shadow-sm border border-bakery-200 flex items-center space-x-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping mr-1"></span>
+                                <span>${pie.badge}</span>
                             </span>
                         </div>
 
@@ -523,9 +613,9 @@
                             </div>
 
                             <!-- Vote Button -->
-                            <button onclick="handleCastVote('${pie.id}')" 
-                                    class="w-full bg-bakery-chocolate hover:bg-bakery-800 text-white font-semibold py-3 px-4 rounded-2xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center space-x-2 active:scale-95 text-sm cursor-pointer">
-                                <i class="fa-solid fa-heart text-amber-400 animate-pulse"></i>
+                            <button onclick="handleCastVote('${pie.id}', event)" 
+                                    class="w-full bg-bakery-chocolate hover:bg-bakery-800 text-white font-semibold py-3 px-4 rounded-2xl shadow-md transition-all duration-300 flex items-center justify-center space-x-2 active:scale-95 text-sm cursor-pointer animate-pulse-glow">
+                                <i class="fa-solid fa-heart text-amber-400 group-hover:scale-125 transition-transform duration-300"></i>
                                 <span>โหวตเมนูนี้</span>
                             </button>
                         </div>
@@ -535,8 +625,13 @@
             });
         }
 
-        // --- 4. Voting Action & Confetti Animation ---
-        function handleCastVote(pieId) {
+        // --- 4. Voting Action & Animations ---
+        function handleCastVote(pieId, event) {
+            // Spawn Floating +1 Vote Badge at Click Position
+            if (event) {
+                spawnPlusOneBadge(event.clientX, event.clientY);
+            }
+
             // Increment count in state
             if (typeof votesState[pieId] !== 'number') {
                 votesState[pieId] = 0;
@@ -553,28 +648,39 @@
             triggerFireworks();
         }
 
+        function spawnPlusOneBadge(x, y) {
+            const badge = document.createElement('span');
+            badge.className = 'vote-plus-badge text-xl';
+            badge.innerHTML = '+1 VOTE! ❤️';
+            badge.style.left = `${x - 40}px`;
+            badge.style.top = `${y - 20}px`;
+            document.body.appendChild(badge);
+
+            setTimeout(() => {
+                badge.remove();
+            }, 1000);
+        }
+
         function triggerFireworks() {
             if (typeof confetti === 'function') {
-                // First burst
                 confetti({
-                    particleCount: 80,
-                    spread: 70,
+                    particleCount: 90,
+                    spread: 75,
                     origin: { y: 0.6 }
                 });
 
-                // Side cannons
                 setTimeout(() => {
                     confetti({
-                        particleCount: 40,
+                        particleCount: 50,
                         angle: 60,
-                        spread: 55,
-                        origin: { x: 0 }
+                        spread: 60,
+                        origin: { x: 0.05, y: 0.7 }
                     });
                     confetti({
-                        particleCount: 40,
+                        particleCount: 50,
                         angle: 120,
-                        spread: 55,
-                        origin: { x: 1 }
+                        spread: 60,
+                        origin: { x: 0.95, y: 0.7 }
                     });
                 }, 150);
             }
@@ -605,10 +711,8 @@
                 timerBar.style.width = '0%';
             }, 50);
 
-            // Clear old timer if any
             if (autoCloseTimer) clearTimeout(autoCloseTimer);
 
-            // Auto close after 2.1 seconds so next user can vote immediately
             autoCloseTimer = setTimeout(() => {
                 closeSuccessModal();
             }, 2100);
@@ -663,12 +767,17 @@
             e.preventDefault();
             const inputVal = document.getElementById('admin-password-input').value.trim();
             const errEl = document.getElementById('auth-error-msg');
+            const card = document.getElementById('admin-auth-card');
 
             if (inputVal === ADMIN_PASSWORD_CORRECT) {
                 closeAdminAuth();
                 openAdminDashboard();
             } else {
                 errEl.classList.remove('hidden');
+                card.classList.add('shake-animation');
+                setTimeout(() => {
+                    card.classList.remove('shake-animation');
+                }, 500);
                 document.getElementById('admin-password-input').focus();
             }
         }
@@ -684,7 +793,6 @@
         }
 
         function renderAdminDashboardContent() {
-            // Calculate Totals
             let totalVotes = 0;
             let maxVotes = -1;
             let topMenu = '-';
@@ -701,7 +809,6 @@
             document.getElementById('dash-total-votes').textContent = totalVotes.toLocaleString();
             document.getElementById('dash-top-menu').textContent = topMenu;
 
-            // Render Breakdown List
             const container = document.getElementById('admin-tally-list');
             container.innerHTML = '';
 
@@ -709,9 +816,11 @@
                 const count = votesState[pie.id] || 0;
                 const percentage = totalVotes > 0 ? ((count / totalVotes) * 100).toFixed(1) : 0;
                 const imgUrl = imagesState[pie.id] || pie.defaultImg;
+                const isTop = (count === maxVotes && count > 0);
 
                 const rowHtml = `
-                    <div class="bg-bakery-50 p-3 md:p-4 rounded-xl border border-bakery-200">
+                    <div class="bg-bakery-50 p-3 md:p-4 rounded-xl border border-bakery-200 relative overflow-hidden">
+                        ${isTop ? '<div class="absolute top-0 right-0 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-bl-lg shadow"><i class="fa-solid fa-crown mr-1"></i> TOP VOTED</div>' : ''}
                         <div class="flex items-center justify-between mb-2">
                             <div class="flex items-center space-x-3 overflow-hidden">
                                 <img src="${imgUrl}" alt="${pie.nameTH}" class="w-10 h-10 rounded-lg object-cover border border-bakery-300 flex-shrink-0">
@@ -726,9 +835,9 @@
                             </div>
                         </div>
 
-                        <!-- Progress Bar -->
+                        <!-- Animated Progress Bar -->
                         <div class="w-full bg-gray-200 h-3 rounded-full overflow-hidden flex">
-                            <div class="bg-amber-700 h-full transition-all duration-500 rounded-full" style="width: ${percentage}%"></div>
+                            <div class="bg-amber-700 h-full transition-all duration-700 ease-out rounded-full" style="width: ${percentage}%"></div>
                         </div>
 
                         <!-- Admin Actions for Item -->
